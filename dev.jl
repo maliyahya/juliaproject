@@ -95,7 +95,13 @@ println("normalized_features:")
 display("text/plain", normalized_features)
 
 # PCA modelini oluştur
-pca_model = fit(PCA, normalized_features; maxoutdim=2)
+pca_model = fit(PCA, normalized_features; maxoutdim=3)
+# 4 tane input  dimension'dan:
+# 1 tane output dimension bilginin %43.25'ini tutuyor.
+# 2 tane output dimension bilginin %70.17'sini tutuyor.
+# 3 tane output dimension bilginin %92.24'ünü tutuyor.
+# Yani 3 tane iyi gibi (4 tanesi zaten PCA değil, direkt inputun kendisi)
+
 
 # Boyut azaltılmış veriyi al
 reduced_features = transform(pca_model, normalized_features)
