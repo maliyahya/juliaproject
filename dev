@@ -64,6 +64,6 @@ series = TvSeries[]
 for x in 1:sayi
     push!(series, fetch_tv_series(all_tv_show_ids[x]))
 end
-    println(series[2])
+    println(series[1])
 
 
