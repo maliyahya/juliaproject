@@ -1,27 +1,49 @@
-import Pkg
-Pkg.add("HTTP")
-Pkg.add("JSON")
 using HTTP
 using JSON
-api_key = "08333c23ecfae8c3874ac3fd49b41e67"
+
+const API_KEY = "08333c23ecfae8c3874ac3fd49b41e67"
+
+struct TvSeries
+    name::String
+    adult::Bool
+    created_by::String
+    episode_run_time::Int
+    genres::Vector{String}
+    first_air_date::String
+    last_air_date::String
+    networks::Vector{String}
+    number_of_episodes::Int
+    number_of_seasons::Int
+    status::String
+    popularity::Float64
+end
+
+function fetch_tv_series(tv_show_id::Int,)
+    url = "https://api.themoviedb.org/3/tv/$tv_show_id?language=en-US&api_key=$API_KEY"
+    response = HTTP.get(url)
+
+    if HTTP.status(response) == 200
+        response_data = JSON.parse(String(response.body))
+        
+        return TvSeries(
+            response_data["name"],
+            response_data["adult"],
+            response_data["created_by"][1]["name"],
+            response_data["episode_run_time"][1],
+            [genre["name"] for genre in response_data["genres"]],
+            response_data["first_air_date"],
+            response_data["last_air_date"],
+            [network["name"] for network in response_data["networks"]],
+            response_data["number_of_episodes"],
+            response_data["number_of_seasons"],
+            response_data["status"],
+            response_data["popularity"]
+        )
+    else
+        error("HTTP Request failed with status: $(HTTP.status(response))")
+    end
+end
 tv_show_id = 49523
 language = "tr-TR"
-url = "https://api.themoviedb.org/3/tv/$tv_show_id?language=$language&api_key=$api_key"
-response = HTTP.get(url)
-if HTTP.status(response) == 200
-    json_data = JSON.parse(String(response.body))
-    println("Name: ", json_data["name"])
-    println("Adult: ", json_data["adult"])
-    println("Created By: ", json_data["created_by"])
-    println("Episode Run Time: ", json_data["episode_run_time"])
-    println("Genres: ", json_data["genres"])
-    println("First Air Date: ", json_data["first_air_date"])
-    println("Last Air Date: ", json_data["last_air_date"])
-    println("Networks: ", json_data["networks"][1]["name"])
-    println("Number of Episodes: ", json_data["number_of_episodes"])
-    println("Number of Seasons: ", json_data["number_of_seasons"])
-    println("Status: ", json_data["status"])
-    println("Popularity: ", json_data["popularity"])
-else
-    println("HTTP Request failed with status: ", HTTP.status(response))
-end
+tv_series = fetch_tv_series(tv_show_id)
+println(tv_series.genres[1])
