@@ -100,7 +100,7 @@ pca_model = fit(PCA, normalized_features; maxoutdim=3)
 # 1 tane output dimension bilginin %43.25'ini tutuyor.
 # 2 tane output dimension bilginin %70.17'sini tutuyor.
 # 3 tane output dimension bilginin %92.24'ünü tutuyor.
-# Yani 3 tane iyi gibi (4 tanesi zaten PCA değil, direkt inputun kendisi)
+# Yani 3 tane output olması iyi sonuç veriyor. (4 tanesi zaten PCA değil, direkt inputun kendisi)
 
 
 # Boyut azaltılmış veriyi al
@@ -117,6 +117,13 @@ end
 println("\nreduced_features matrix'i böyle:")
 display("text/plain", reduced_features)
 
-
+# Veriyi geri elde etme(?)
+reversed_reduced_features = reconstruct(pca_model, reduced_features)
+println("\nreversed_reduced_features matrix'i böyle:")
+display("text/plain", reversed_reduced_features)
+println("\nAsıl (PCA uygulanmamış) matrix böyleydi:")
+display("text/plain", normalized_features)
+#Sonuç
+println("\n Buradan anlıyoruz ki veriyi eski haline dönüştürmeye çalıştırdığımızda veri %92.24215076926459 oranla orjinaline benziyor. Yani verinin doğruluğu konusunda %7.757849230735414 gibi bir kayıp söz konusu oluyor.")
 
 #plotlyjs(size = (360, 360))
