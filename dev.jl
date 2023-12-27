@@ -103,4 +103,5 @@ for i in 1:Int(length(reduced_features) / 2)
     println("TV Serisi $(i): ", reduced_features[:, i])
 end
 
-println('\n', reduced_features)
+println("\nreduced_features matrix'i böyle:")
+display("text/plain", reduced_features)
