@@ -1,0 +1,11 @@
+import Pkg
+Pkg.add("HTTP")
+
+using HTTP
+
+api_key = "08333c23ecfae8c3874ac3fd49b41e67"
+url = "https://api.themoviedb.org/3/discover/tv?include_null_first_air_dates=false&language=en-US&page=79&sort_by=primary_release_date.desc&with_original_language=tr&api_key=$api_key"
+
+response = HTTP.get(url)
+
+println(String(response.body.data))
