@@ -31,14 +31,14 @@ function fetch_tv_show_ids(page::Int)
 end
 
 function fetch_tv_series(tv_show_id::Int)
-    url = "https://api.themoviedb.org/3/tv/$tv_show_id?language=en-US&api_key=08333c23ecfae8c3874ac3fd49b41e67"
+    url = "https://api.themoviedb.org/3/tv/$tv_show_id?language=tr-TR&api_key=08333c23ecfae8c3874ac3fd49b41e67"
     response = HTTP.get(url)
     if HTTP.status(response) == 200
         response_data = JSON.parse(String(response.body))
         return TvSeries(
             response_data["name"],
             response_data["adult"],
-            get(response_data["episode_run_time"], 1, 0),  
+            get(response_data["episode_run_time"], 1, 0),
             [get(genre, "name", "") for genre in response_data["genres"]],
             get(response_data, "first_air_date", ""),
             get(response_data, "last_air_date", ""),
@@ -64,6 +64,43 @@ series = TvSeries[]
 for x in 1:sayi
     push!(series, fetch_tv_series(all_tv_show_ids[x]))
 end
-    println(series[1])
+
+# Tüm çekilen veriyi sırala
+println("Sunucudan alınan tüm diziler:")
+for i in eachindex(series)
+    println(series[i])
+end
 
 
+
+
+
+
+# PCA Test
+using MultivariateStats
+using StatsBase
+
+# Veri setini hazırla (sayısal özellikleri kullan)
+numeric_features = hcat([series[i].episode_run_time for i in eachindex(series)],
+    [series[i].number_of_episodes for i in eachindex(series)],
+    [series[i].number_of_seasons for i in eachindex(series)],
+    [series[i].popularity for i in eachindex(series)])
+
+# Veriyi normalize et
+normalized_features = zscore(numeric_features, 1)
+
+# PCA modelini oluştur
+pca_model = fit(PCA, normalized_features; maxoutdim=2)
+
+# Boyut azaltılmış veriyi al
+reduced_features = transform(pca_model, normalized_features)
+
+# Sonucu göster
+println("\nBoyut Azaltılmış Veri Seti:")
+# Buradaki length(series)'i sildim ve "1:Int(length(reduced_features)/2)" yazdım. reduced_features[]'da sadece 4 tane satır (ya da sütun tam emin değilim) var, bu yüzden böyle yaptım.
+println(length(reduced_features), " tane indexs var. reduced_features[] array'i (2x4)'lük bir matrix")
+for i in 1:Int(length(reduced_features) / 2)
+    println("TV Serisi $(i): ", reduced_features[:, i])
+end
+
+println('\n', reduced_features)
