@@ -1,5 +1,5 @@
-using HTTP
-using JSON
+using HTTP, JSON
+#using Plots
 
 const API_KEY = "08333c23ecfae8c3874ac3fd49b41e67"
 
@@ -87,7 +87,12 @@ numeric_features = hcat([series[i].episode_run_time for i in eachindex(series)],
     [series[i].popularity for i in eachindex(series)])
 
 # Veriyi normalize et
+#https://youtu.be/ZWyoSZk-Uq0?t=500
+# row = feature, column = sample
 normalized_features = zscore(numeric_features, 1)
+normalized_features = normalized_features'
+println("normalized_features:")
+display("text/plain", normalized_features)
 
 # PCA modelini oluştur
 pca_model = fit(PCA, normalized_features; maxoutdim=2)
@@ -97,11 +102,15 @@ reduced_features = transform(pca_model, normalized_features)
 
 # Sonucu göster
 println("\nBoyut Azaltılmış Veri Seti:")
-# Buradaki length(series)'i sildim ve "1:Int(length(reduced_features)/2)" yazdım. reduced_features[]'da sadece 4 tane satır (ya da sütun tam emin değilim) var, bu yüzden böyle yaptım.
-println(length(reduced_features), " tane indexs var. reduced_features[] array'i (2x4)'lük bir matrix")
-for i in 1:Int(length(reduced_features) / 2)
+println(length(reduced_features), " tane indexsi ve $(axes(reduced_features, 2)) tane sütunu var. reduced_features[] array'i (2x20)'lik bir matrix yani loop 20 kere tekrarlanıcak.")
+# axes(reduced_features, 2) fonksiyonu sütun sayısını döndürür. (1=satır, 2=sütun, 3...=diğer boyutlar) (axes = eksenler (x,y,z gibi))
+for i in axes(reduced_features, 2)
     println("TV Serisi $(i): ", reduced_features[:, i])
 end
 
 println("\nreduced_features matrix'i böyle:")
 display("text/plain", reduced_features)
+
+
+
+#plotlyjs(size = (360, 360))
