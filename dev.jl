@@ -108,7 +108,7 @@ reduced_features = transform(pca_model, normalized_features)
 
 # Sonucu göster
 println("\nBoyut Azaltılmış Veri Seti:")
-println(length(reduced_features), " tane indexsi ve $(axes(reduced_features, 2)) tane sütunu var. reduced_features[] array'i (2x20)'lik bir matrix yani loop 20 kere tekrarlanıcak.")
+println(length(reduced_features), " tane indexsi ve $(size(reduced_features, 2)) tane sütunu var. reduced_features[] array'i (3x20)'lik bir matrix yani loop 20 kere tekrarlanıcak.")
 # axes(reduced_features, 2) fonksiyonu sütun sayısını döndürür. (1=satır, 2=sütun, 3...=diğer boyutlar) (axes = eksenler (x,y,z gibi))
 for i in axes(reduced_features, 2)
     println("TV Serisi $(i): ", reduced_features[:, i])
