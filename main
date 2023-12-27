@@ -1,11 +1,27 @@
 import Pkg
 Pkg.add("HTTP")
-
+Pkg.add("JSON")
 using HTTP
-
+using JSON
 api_key = "08333c23ecfae8c3874ac3fd49b41e67"
-url = "https://api.themoviedb.org/3/discover/tv?include_null_first_air_dates=false&language=en-US&page=79&sort_by=primary_release_date.desc&with_original_language=tr&api_key=$api_key"
-
+tv_show_id = 49523
+language = "tr-TR"
+url = "https://api.themoviedb.org/3/tv/$tv_show_id?language=$language&api_key=$api_key"
 response = HTTP.get(url)
-
-println(String(response.body.data))
+if HTTP.status(response) == 200
+    json_data = JSON.parse(String(response.body))
+    println("Name: ", json_data["name"])
+    println("Adult: ", json_data["adult"])
+    println("Created By: ", json_data["created_by"])
+    println("Episode Run Time: ", json_data["episode_run_time"])
+    println("Genres: ", json_data["genres"])
+    println("First Air Date: ", json_data["first_air_date"])
+    println("Last Air Date: ", json_data["last_air_date"])
+    println("Networks: ", json_data["networks"][1]["name"])
+    println("Number of Episodes: ", json_data["number_of_episodes"])
+    println("Number of Seasons: ", json_data["number_of_seasons"])
+    println("Status: ", json_data["status"])
+    println("Popularity: ", json_data["popularity"])
+else
+    println("HTTP Request failed with status: ", HTTP.status(response))
+end
