@@ -127,3 +127,37 @@ display("text/plain", normalized_features)
 println("\n Buradan anlıyoruz ki veriyi eski haline dönüştürmeye çalıştırdığımızda veri %92.24215076926459 oranla orjinaline benziyor. Yani verinin doğruluğu konusunda %7.757849230735414 gibi bir kayıp söz konusu oluyor.")
 
 #plotlyjs(size = (360, 360))
+using Clustering
+using Plots
+
+# Küme sayısı
+k = 3
+
+#Model oluştur
+kmeans_model = kmeans(reduced_features', k)
+
+#Kümeleri tahmin etme
+cluster_assignments = assignments(kmeans_model)
+
+#Küme merkezlerini bulma
+cluster_centers = kmeans_model.centers'
+
+#Sonuçları print etme
+println("\nK-Means Kümeleme Sonuçları:")
+for i in 1:k
+    println("TV Serisi $i küme: ", cluster_assignments[i])
+end
+
+#Merkezleri print etme
+println("\nKüme Merkezleri:")
+for i in 1:k
+    println("Küme $i Merkezi: ", cluster_centers[:, i])
+end
+
+#Plot olarak gösterir
+scatter(reduced_features[1, :], reduced_features[2, :], reduced_features[3, :], color=cluster_assignments, marker=:auto, xlabel="Principal Component 1", ylabel="Principal Component 2", zlabel="Principal Component 3", legend=false)
+scatter!(cluster_centers[1, :], cluster_centers[2, :], cluster_centers[3, :], color=:red, markersize=8, label="Cluster Centers")
+
+
+
+
