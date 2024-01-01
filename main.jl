@@ -137,4 +137,26 @@ println("\n Buradan anlıyoruz ki veriyi eski haline dönüştürmeye çalışt�
 
 println(series)
 
+using  DataFrames
+
+
+
+# Veri setini oluştur
+tv_series_data = DataFrame(
+    name = [series[i].name for i in eachindex(series)],
+    adult = [series[i].adult for i in eachindex(series)],
+    episode_run_time = [series[i].episode_run_time for i in eachindex(series)],
+    genres = [series[i].genres for i in eachindex(series)],
+    first_air_date = [series[i].first_air_date for i in eachindex(series)],
+    last_air_date = [series[i].last_air_date for i in eachindex(series)],
+    networks = [series[i].networks for i in eachindex(series)],
+    number_of_episodes = [series[i].number_of_episodes for i in eachindex(series)],
+    number_of_seasons = [series[i].number_of_seasons for i in eachindex(series)],
+    status = [series[i].status for i in eachindex(series)],
+    popularity = [series[i].popularity for i in eachindex(series)],
+)
+
+println(tv_series_data)
+
+
 
