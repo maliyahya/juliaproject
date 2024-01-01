@@ -3,16 +3,16 @@ using HTTP, JSON
 
 const API_KEY = "08333c23ecfae8c3874ac3fd49b41e67"
 
-struct TvSeries
+mutable struct TvSeries
     name::String
     adult::Bool
-    episode_run_time::Int
+    episode_run_time::Float64
     genres::Vector{String}
     first_air_date::String
     last_air_date::String
     networks::Vector{String}
-    number_of_episodes::Int
-    number_of_seasons::Int
+    number_of_episodes::Float64
+    number_of_seasons::Float64
     status::String
     popularity::Float64
 end
@@ -106,6 +106,13 @@ pca_model = fit(PCA, normalized_features; maxoutdim=3)
 # Boyut azaltılmış veriyi al
 reduced_features = transform(pca_model, normalized_features)
 
+# PCA ile elde edilen boyut azaltılmış veriyi ana veri setine ekleyin
+for i in 1:length(series)
+    series[i].episode_run_time = reduced_features[1, i]
+    series[i].number_of_episodes = reduced_features[2, i]
+    series[i].number_of_seasons = reduced_features[3, i]
+    series[i].popularity = 0.0
+end
 # Sonucu göster
 println("\nBoyut Azaltılmış Veri Seti:")
 println(length(reduced_features), " tane indexsi ve $(size(reduced_features, 2)) tane sütunu var. reduced_features[] array'i (3x20)'lik bir matrix yani loop 20 kere tekrarlanıcak.")
@@ -127,3 +134,7 @@ display("text/plain", normalized_features)
 println("\n Buradan anlıyoruz ki veriyi eski haline dönüştürmeye çalıştırdığımızda veri %92.24215076926459 oranla orjinaline benziyor. Yani verinin doğruluğu konusunda %7.757849230735414 gibi bir kayıp söz konusu oluyor.")
 
 #plotlyjs(size = (360, 360))
+
+println(series)
+
+
