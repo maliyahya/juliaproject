@@ -53,9 +53,11 @@ function fetch_tv_series(tv_show_id::Int)
     end
 end
 
-
 all_tv_show_ids = []
-for page in 2:2
+
+#Sayfa 1 ila 30 arasında 2024-2020 arasındaki diziler var
+#Sayfa 30'dan-85'e kadar  2020-1975 arasındaki diziler var
+for page in 85:85
     tv_show_ids = fetch_tv_show_ids(page)
     append!(all_tv_show_ids, tv_show_ids)
 end
@@ -71,92 +73,138 @@ for i in eachindex(series)
     println(series[i])
 end
 
+test_dataset = []
+learning_datasetIDS = []
+    # 1 ila 30 arasındaki diziler
+    for page in 2:2
+        tv_show_ids = fetch_tv_show_ids(page)
+        for show_id in tv_show_ids
+            show_info = fetch_tv_series(show_id)
+            # Statusu Ended olanları sınama datasetine ekle
+            if show_info.status == "Ended"
+                push!(test_dataset, show_id)
+            end
+        end
+    end
 
 
-
-
-
-# PCA Test
-using MultivariateStats
-using StatsBase
-
-# Veri setini hazırla (sayısal özellikleri kullan)
-numeric_features = hcat([series[i].episode_run_time for i in eachindex(series)],
-    [series[i].number_of_episodes for i in eachindex(series)],
-    [series[i].number_of_seasons for i in eachindex(series)],
-    [series[i].popularity for i in eachindex(series)])
-
-# Veriyi normalize et
-#https://youtu.be/ZWyoSZk-Uq0?t=500
-# row = feature, column = sample
-normalized_features = zscore(numeric_features, 1)
-normalized_features = normalized_features'
-println("normalized_features:")
-display("text/plain", normalized_features)
-
-# PCA modelini oluştur
-pca_model = fit(PCA, normalized_features; maxoutdim=3)
-# 4 tane input  dimension'dan:
-# 1 tane output dimension bilginin %43.25'ini tutuyor.
-# 2 tane output dimension bilginin %70.17'sini tutuyor.
-# 3 tane output dimension bilginin %92.24'ünü tutuyor.
-# Yani 3 tane output olması iyi sonuç veriyor. (4 tanesi zaten PCA değil, direkt inputun kendisi)
-
-
-# Boyut azaltılmış veriyi al
-reduced_features = transform(pca_model, normalized_features)
-
-# PCA ile elde edilen boyut azaltılmış veriyi ana veri setine ekleyin
-for i in 1:length(series)
-    series[i].episode_run_time = reduced_features[1, i]
-    series[i].number_of_episodes = reduced_features[2, i]
-    series[i].number_of_seasons = reduced_features[3, i]
-    series[i].popularity = 0.0
-end
-# Sonucu göster
-println("\nBoyut Azaltılmış Veri Seti:")
-println(length(reduced_features), " tane indexsi ve $(size(reduced_features, 2)) tane sütunu var. reduced_features[] array'i (3x20)'lik bir matrix yani loop 20 kere tekrarlanıcak.")
-# axes(reduced_features, 2) fonksiyonu sütun sayısını döndürür. (1=satır, 2=sütun, 3...=diğer boyutlar) (axes = eksenler (x,y,z gibi))
-for i in axes(reduced_features, 2)
-    println("TV Serisi $(i): ", reduced_features[:, i])
+    # 30 ila 85 arasındaki diziler
+for page in 31:31
+    tv_show_ids = fetch_tv_show_ids(page)
+    for show_id in tv_show_ids
+        show_info = fetch_tv_series(show_id)
+        # Statusu Ended olanları öğrenme datasetine ekle
+        if show_info.status == "Ended"
+            push!(learning_datasetIDS, show_id)
+        end
+    end
 end
 
-println("\nreduced_features matrix'i böyle:")
-display("text/plain", reduced_features)
+learning_series_details = []
 
-# Veriyi geri elde etme(?)
-reversed_reduced_features = reconstruct(pca_model, reduced_features)
-println("\nreversed_reduced_features matrix'i böyle:")
-display("text/plain", reversed_reduced_features)
-println("\nAsıl (PCA uygulanmamış) matrix böyleydi:")
-display("text/plain", normalized_features)
-#Sonuç
-println("\n Buradan anlıyoruz ki veriyi eski haline dönüştürmeye çalıştırdığımızda veri %92.24215076926459 oranla orjinaline benziyor. Yani verinin doğruluğu konusunda %7.757849230735414 gibi bir kayıp söz konusu oluyor.")
+for show_id in learning_datasetIDS
+    try
+        show_info = fetch_tv_series(show_id)
+        push!(learning_series_details, show_info)
+    catch e
+        println("Hata alındı: ", e)
+    end
+end
 
-#plotlyjs(size = (360, 360))
+println("Learning Series Details:")
+for series_detail in learning_series_details
+    println(series_detail)
+end
 
-println(series)
+test_series_details = []
 
-using  DataFrames
+for show_id in test_dataset
+    try
+        show_info = fetch_tv_series(show_id)
+        push!(test_series_details, show_info)
+    catch e
+        println("Hata alındı: ", e)
+    end
+end
 
 
 
-# Veri setini oluştur
-tv_series_data = DataFrame(
-    name = [series[i].name for i in eachindex(series)],
-    adult = [series[i].adult for i in eachindex(series)],
-    episode_run_time = [series[i].episode_run_time for i in eachindex(series)],
-    genres = [series[i].genres for i in eachindex(series)],
-    first_air_date = [series[i].first_air_date for i in eachindex(series)],
-    last_air_date = [series[i].last_air_date for i in eachindex(series)],
-    networks = [series[i].networks for i in eachindex(series)],
-    number_of_episodes = [series[i].number_of_episodes for i in eachindex(series)],
-    number_of_seasons = [series[i].number_of_seasons for i in eachindex(series)],
-    status = [series[i].status for i in eachindex(series)],
-    popularity = [series[i].popularity for i in eachindex(series)],
-)
+println("*******")
+println(learning_series_details[1])
+println("*******")
+println("*******")
+println(test_series_details[1])
+println("*******")
 
-println(tv_series_data)
+
+
+
+
+
+
+# # PCA Test
+# using MultivariateStats
+# using StatsBase
+
+# # Veri setini hazırla (sayısal özellikleri kullan)
+# numeric_features = hcat([series[i].episode_run_time for i in eachindex(series)],
+#     [series[i].number_of_episodes for i in eachindex(series)],
+#     [series[i].number_of_seasons for i in eachindex(series)],
+#     [series[i].popularity for i in eachindex(series)])
+
+# # Veriyi normalize et
+# #https://youtu.be/ZWyoSZk-Uq0?t=500
+# # row = feature, column = sample
+# normalized_features = zscore(numeric_features, 1)
+# normalized_features = normalized_features'
+# println("normalized_features:")
+# display("text/plain", normalized_features)
+
+# # PCA modelini oluştur
+# pca_model = fit(PCA, normalized_features; maxoutdim=3)
+# # 4 tane input  dimension'dan:
+# # 1 tane output dimension bilginin %43.25'ini tutuyor.
+# # 2 tane output dimension bilginin %70.17'sini tutuyor.
+# # 3 tane output dimension bilginin %92.24'ünü tutuyor.
+# # Yani 3 tane output olması iyi sonuç veriyor. (4 tanesi zaten PCA değil, direkt inputun kendisi)
+
+
+# # Boyut azaltılmış veriyi al
+# reduced_features = transform(pca_model, normalized_features)
+
+
+# # Sonucu göster
+# println("\nBoyut Azaltılmış Veri Seti:")
+# println(length(reduced_features), " tane indexsi ve $(size(reduced_features, 2)) tane sütunu var. reduced_features[] array'i (3x20)'lik bir matrix yani loop 20 kere tekrarlanıcak.")
+# # axes(reduced_features, 2) fonksiyonu sütun sayısını döndürür. (1=satır, 2=sütun, 3...=diğer boyutlar) (axes = eksenler (x,y,z gibi))
+# for i in axes(reduced_features, 2)
+#     println("TV Serisi $(i): ", reduced_features[:, i])
+# end
+
+# println("\nreduced_features matrix'i böyle:")
+# display("text/plain", reduced_features)
+
+# # Veriyi geri elde etme(?)
+# reversed_reduced_features = reconstruct(pca_model, reduced_features)
+# println("\nreversed_reduced_features matrix'i böyle:")
+# display("text/plain", reversed_reduced_features)
+# println("\nAsıl (PCA uygulanmamış) matrix böyleydi:")
+# display("text/plain", normalized_features)
+# #Sonuç
+# println("\n Buradan anlıyoruz ki veriyi eski haline dönüştürmeye çalıştırdığımızda veri %92.24215076926459 oranla orjinaline benziyor. Yani verinin doğruluğu konusunda %7.757849230735414 gibi bir kayıp söz konusu oluyor.")
+
+# #plotlyjs(size = (360, 360))
+
+# println(series)
+
+
+
+
+
+
+
+
+
 
 
 
