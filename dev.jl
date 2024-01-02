@@ -190,17 +190,34 @@ test_df = DataFrame(
 =#
 
 using CSV
+using Flux
 
 train_df = CSV.read("train_data.csv", DataFrame)
 test_df = CSV.read("test_data.csv", DataFrame)
 
 println("Eski Hali:\n", describe(train_df))
-# Median = 60, mean = 52.96 [Tüm 0 olan yerlere 60 koydum.]
-train_df.Episode_Run_Time[train_df.Episode_Run_Time .== 0.0] .= 60.0
+# Median = 60, mean = 52.96 [Tüm 0 olan yerlere 60 koydum.] (2. yöntem daha anlaşılır gibi)
+#train_df.Episode_Run_Time[train_df.Episode_Run_Time .== 0.0] .= 60.0
+train_df.Episode_Run_Time = Float64.(replace(train_df.Episode_Run_Time, 0.0 => 60.0))
 
 println("\n\nYeni Hali:\n", describe(train_df))
 
 
+train_df = select(train_df,Not(["Name"]));
+display(train_df)
+combine(groupby(train_df,"Networks",sort=true),nrow=>"count")
 
+# https://www.freecodecamp.org/news/deep-learning-with-julia/#what-should-you-know-in-advance
 
+train_df = select(train_df,(["Episode_Run_Time", "Number_of_Episodes", "Number_of_Seasons", "Popularity"]));
+display(train_df)
 
+model = Chain(
+    Dense(4 => 3, relu),
+    Dense(15=>10, sigmoid),
+    softmax
+)
+optimizer = Flux.setup(Adam(), model)
+#Flux.train!(loss_function, model, data, optimizer)
+
+# Ne yazık ki çalıştıramadım.
