@@ -87,7 +87,7 @@ learning_datasetIDS = []
         end
     end
     # 30 ila 85 arasındaki diziler
-for page in 31:31
+for page in 60:60
     tv_show_ids = fetch_tv_show_ids(page)
     for show_id in tv_show_ids
         show_info = fetch_tv_series(show_id)
@@ -120,28 +120,23 @@ for show_id in test_dataset
     end
 end
 
-
-
-
-
 using Statistics: mean
 using DataFrames
 using MLJ
-
-
+using Missings
 
 learning_df = DataFrame(
     Name = [series.name for series in learning_series_details],
     Adult = [series.adult for series in learning_series_details],
-    Episode_Run_Time = [series.episode_run_time for series in learning_series_details],
+    Episode_Run_Time = coalesce.([series.episode_run_time for series in learning_series_details], 0.0),
     Genres = [series.genres for series in learning_series_details],
-    First_Air_Date = [series.first_air_date for series in learning_series_details],
-    Last_Air_Date = [series.last_air_date for series in learning_series_details],
+    First_Air_Date = coalesce.([series.first_air_date for series in learning_series_details], missing),
+    Last_Air_Date = coalesce.([series.last_air_date for series in learning_series_details], missing),
     Networks = [series.networks for series in learning_series_details],
-    Number_of_Episodes = [series.number_of_episodes for series in learning_series_details],
-    Number_of_Seasons = [series.number_of_seasons for series in learning_series_details],
-    Status = [series.status for series in learning_series_details],
-    Popularity = [series.popularity for series in learning_series_details]
+    Number_of_Episodes = coalesce.([series.number_of_episodes for series in learning_series_details], 0.0),
+    Number_of_Seasons = coalesce.([series.number_of_seasons for series in learning_series_details], 0.0),
+    Status = coalesce.([series.status for series in learning_series_details], missing),
+    Popularity = coalesce.([series.popularity for series in learning_series_details], 0.0)
 )
 test_df = DataFrame(
     Name = [series.name for series in test_series_details],
@@ -157,8 +152,7 @@ test_df = DataFrame(
     Popularity = [series.popularity for series in test_series_details]
 )
 
-
-
+describe(train_df)
 
 
 
