@@ -1,5 +1,5 @@
 using HTTP, JSON
-#=
+
 const API_KEY = "08333c23ecfae8c3874ac3fd49b41e67"
 
 struct TvSeries
@@ -102,7 +102,7 @@ for i in axes(reduced_features, 2)
     println("TV Serisi $(i): ", reduced_features[:, i])
 end
 
-#=
+
 println("\nreduced_features matrix'i böyle:")
 display("text/plain", reduced_features)
 
@@ -112,7 +112,7 @@ println("\nreversed_reduced_features matrix'i böyle:")
 display("text/plain", reversed_reduced_features)
 println("\nAsıl (PCA uygulanmamış) matrix böyleydi:")
 display("text/plain", normalized_features)
-=#
+
 
 
 
@@ -122,7 +122,7 @@ using Clustering
 using Plots
 
 # Küme sayısı
-k = 3
+k = 5
 
 #Model oluştur
 kmeans_model = kmeans(reduced_features, k)
@@ -149,13 +149,13 @@ end
 scatter(reduced_features[1, :], reduced_features[2, :], color=cluster_assignments, marker=:auto, xlabel="Principal Component 1", ylabel="Principal Component 2", zlabel="Principal Component 3", legend=false)
 scatter!(cluster_centers[1, :], cluster_centers[2, :], color=:red, markersize=8, label="Cluster Centers")
 # Bazı verilerde hata var, bu yüzden çok dağınık görülüyorlar. Bizim bu hatalı verileri ayıklamamız gerek.
-=#
 
 
 
 
 
 
+#=
 using Statistics: mean
 using DataFrames
 using MLJ
@@ -211,13 +211,15 @@ combine(groupby(train_df,"Networks",sort=true),nrow=>"count")
 
 train_df = select(train_df,(["Episode_Run_Time", "Number_of_Episodes", "Number_of_Seasons", "Popularity"]));
 display(train_df)
-
+#=
 model = Chain(
     Dense(4 => 3, relu),
     Dense(15=>10, sigmoid),
     softmax
 )
 optimizer = Flux.setup(Adam(), model)
+=#
 #Flux.train!(loss_function, model, data, optimizer)
 
 # Ne yazık ki çalıştıramadım.
+=#
