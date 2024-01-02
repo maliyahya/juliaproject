@@ -1,5 +1,5 @@
 using HTTP, JSON
-
+#=
 const API_KEY = "08333c23ecfae8c3874ac3fd49b41e67"
 
 struct TvSeries
@@ -149,4 +149,58 @@ end
 scatter(reduced_features[1, :], reduced_features[2, :], color=cluster_assignments, marker=:auto, xlabel="Principal Component 1", ylabel="Principal Component 2", zlabel="Principal Component 3", legend=false)
 scatter!(cluster_centers[1, :], cluster_centers[2, :], color=:red, markersize=8, label="Cluster Centers")
 # Bazı verilerde hata var, bu yüzden çok dağınık görülüyorlar. Bizim bu hatalı verileri ayıklamamız gerek.
+=#
+
+
+
+
+
+
+using Statistics: mean
+using DataFrames
+using MLJ
+using Missings
+#=
+learning_df = DataFrame(
+    Name = [series.name for series in learning_series_details],
+    Adult = [series.adult for series in learning_series_details],
+    Episode_Run_Time = coalesce.([series.episode_run_time for series in learning_series_details], 0.0),
+    Genres = [series.genres for series in learning_series_details],
+    First_Air_Date = coalesce.([series.first_air_date for series in learning_series_details], missing),
+    Last_Air_Date = coalesce.([series.last_air_date for series in learning_series_details], missing),
+    Networks = [series.networks for series in learning_series_details],
+    Number_of_Episodes = coalesce.([series.number_of_episodes for series in learning_series_details], 0.0),
+    Number_of_Seasons = coalesce.([series.number_of_seasons for series in learning_series_details], 0.0),
+    Status = coalesce.([series.status for series in learning_series_details], missing),
+    Popularity = coalesce.([series.popularity for series in learning_series_details], 0.0)
+)
+test_df = DataFrame(
+    Name = [series.name for series in test_series_details],
+    Adult = [series.adult for series in test_series_details],
+    Episode_Run_Time = [series.episode_run_time for series in test_series_details],
+    Genres = [series.genres for series in test_series_details],
+    First_Air_Date = [series.first_air_date for series in test_series_details],
+    Last_Air_Date = [series.last_air_date for series in test_series_details],
+    Networks = [series.networks for series in test_series_details],
+    Number_of_Episodes = [series.number_of_episodes for series in test_series_details],
+    Number_of_Seasons = [series.number_of_seasons for series in test_series_details],
+    Status = [series.status for series in test_series_details],
+    Popularity = [series.popularity for series in test_series_details]
+)
+=#
+
+using CSV
+
+train_df = CSV.read("train_data.csv", DataFrame)
+test_df = CSV.read("test_data.csv", DataFrame)
+
+println("Eski Hali:\n", describe(train_df))
+# Median = 60, mean = 52.96 [Tüm 0 olan yerlere 60 koydum.]
+train_df.Episode_Run_Time[train_df.Episode_Run_Time .== 0.0] .= 60.0
+
+println("\n\nYeni Hali:\n", describe(train_df))
+
+
+
+
 
