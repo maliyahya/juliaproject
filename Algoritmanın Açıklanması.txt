@@ -1,0 +1,22 @@
+\section{Çerçevenin Algoritmasının Açıklanması}
+
+Önceki "4 Yazılımın Kullanılması" adımda hazırladığımız programı şimdi çalıştırıyoruz.
+
+Bu algoritma öncelikle "The Movie DataBase (TMDB)" (\href{https://www.themoviedb.org/}{https://www.themoviedb.org}) adresindeki verileri bu hizmetin sağlamış olduğu API'larla çekiyor. Bunu yapmak için biz kendi API anahtarımızı (APIKEY) projeye ekledik.
+
+Çekeceğimiz verinin yapısını "mutable struct" şeklinde TvSeries değişkeninde tanımladık.
+
+"fetch.tv.show.ids()" fonksiyonu her bir sayfadaki dizilerin id'lerini alıyor ve bu id'lerin karşılık geldiği dizinin tüm özellikleri "fetch.tv.series()" ile öğreniliyor.
+
+Bu fonksiyonların altındaki for döngüleride bu fonksiyonlar kullanılarak tüm veriler series[] dizinine kaydediliyor.
+
+Bu aşamalar TMDB sunucularının yavaş çalışması yüzünden uzun sürebiliyor, o yüzden biz "trainData.csv" ve "testData.csv" verisetlerini önceden oluşturduk.
+
+Bu çekilen veri setinde maalesef bazı hatalar vardı, bunlardan en büyük olanı bazı örneklerin "episode.run.time" özelliğinin "0.0" olmasıydı. Bu özellik bir bölümün ne kadar sürdüğü bilgisidir. Bu durumu önlemek için önce Julia'nın sağladığı "Missings" paketini kullanmayı denedik. Ancak bu paket sadece integer 0'ları missing değer olarak alıyordu ve float 0.0'ları görmüyordu. Bu yüzden biz kendimiz "replace" özelliğini kullanarak 0.0 ayzan yerlere median değer olan 60'ı girdik.
+Ön işlem olarak son olarak sayısay veriler olan 4 özelliği aldık. (run time, number of season, number of episodes ve popularity)
+
+Verileri ön işlmeden geçirdikten sonra verimize PCA uyguladık. Bu sayede veri 4 boyutlu bir yapıdan sadece 2 boyutlu bir yapıya küçüldü. Bunu son aşamada "scatter plot" şeklinde gösterdik.
+
+Bu son aşamada verimize K-Means uygulayarak tüm noktaları grupladık. Bu grupların ne temsil ettiğini öğrenmek için o grupların her birinin içinde bulunan verilerin toplam sezon sayılarının ortalamasını aldık. Bu sayede yeni bir veri eklendiğinde (PCA uygulandıktan sonra) makine bunu, bu verinin sezon sayısı, kendisine karşılık gelen grubun ortalamasının sezon sayısıdır diye tahmin ediyor.
+
+Sonuç olarak oluşturduğumuz K-Means sayesinde hem verimizi görsel olarak görüyoruz, hem de yeni eklediğimiz bir sezon sayısı bilinmeyen bir verinin hangi gruba yakın olduğunu görürsek o grubun ortalaması kadar sezona sahip olduğunu tahmin ediyoruz.

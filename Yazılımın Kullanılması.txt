@@ -1,0 +1,47 @@
+\section{Yazılımın Kullanılması}
+
+Yazılımın nasıl kullanılacağı, çalıştırmak için gerekli adımlar ve gereksinimler...
+
+Yazılımı kullanmak için önce bilgisayarımıza Julia'yı "\href{https://julialang.org/downloads/}{https://julialang.org/downloads}" indirme linkinden yüklemek gerekiyor.
+
+Kodu yazmak ve incelemek için Virtual Studio Code (VSCode) kullandık ama herhangi bir editörü de kullanabilirsiniz.
+
+VSCode'u "\href{https://code.visualstudio.com/download}{https://code.visualstudio.com/download}" linkten indirebilirsiniz.
+
+Bu programları yükledikten sonra VSCode'da uzantı olarak Julia uzantısını seçiyoruz. Ayrıca kod okunabilirliğini arttırmak için "Julia Color Themes" uzantısının sapladığı "Julia (Monokai Vibrant)" teması kullanılabilir.
+
+CSV dosyalarının okunabilirliğini arttırmak için "Rainbow CSV" uzantısını kullandık.
+
+Tüm uzantıları yükledikten sonra bilgisayarımzda bulunan Julia uygulamasına gerekli paketleri indirmemiz gerekiyor. Bunun için önce bilgisayarımızdaki Julia uygulamasını açıyoruz, sonra klavyemizdeki "]" tuşuna basıyoruz, bu tuşa bastıktan sonra Julia "package manager" moduna geçiyor ve biz buradan paketleri yükleyeceğiz. Konsola:
+
+\begin{itemize}
+    \item add HTTP
+    \item add JSON
+    \item add Statistics
+    \item add MultivariateStats
+    \item add StatsBase
+    \item add DataFrames
+    \item add MLJ
+    \item add Missings
+\end{itemize}
+
+,komutlarını teker teker girip hepsinin yüklenmesini bekleyeceğiz.
+
+Tüm hepsini yükledikten sonra "package manager" modundan çıkmak için ya konsolda hiçbir metin yazmıyorken backspace tuşuna basmalı ya da direkt ctrl+C kısa yolunu kullanmalıyız.
+
+Normal Julia konsoluna ise herbir yüklediğimiz paketi import etmeliyiz.
+
+\begin{itemize}
+    \item import HTTP
+    \item import JSON
+    \item import Statistics
+    \item import MultivariateStats
+    \item import StatsBase
+    \item import DataFrames
+    \item import MLJ
+    \item import Missings
+\end{itemize}
+
+Tüm bu komutları yazdıktan sonra programımız çalışmaya hazır hale gelecektir.
+
+Bu yazılımı çalıştırmak için main.jl'i veya dev.jl'i çalıştırmamız yeterlidir.
